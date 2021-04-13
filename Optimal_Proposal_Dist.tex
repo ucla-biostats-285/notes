@@ -25,6 +25,8 @@
 %
 
 \usepackage{amsmath,amsfonts,graphicx}
+\usepackage[colorlinks, citecolor={blue}]{hyperref}
+\usepackage{natbib}
 
 %
 % The following commands set up the lecnum (lecture number)
@@ -107,10 +109,12 @@
 \begin{document}
 %FILL IN THE RIGHT INFO.
 %\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{1}{April 13}{Andrew Holbrook}{Nicholas Marco}
+\lecture{2}{April 13}{Andrew Holbrook}{Nicholas Marco}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 \section{Introduction}
+This note summarizes the review paper \citet{rosenthal2011optimal}.
+
 \subsection{Metropolis-Hastings Algorithm}
 Let the target distribution have density $\pi$. Let $\mathbf{X}_n$ be the $n^{th}$ sample from our Markov chain. We will denote the proposed value for our $(n+1)^{th}$ sample as $\mathbf{Y}_{n+1}$. Let $q(\mathbf{X}_n, \mathbf{Y}_{n+1})$ be the proposal distribution of $\mathbf{Y}_{n+1}$. Thus we have the probability accepting the transition from $\mathbf{X}_n$ to $\mathbf{Y}_{n+1}$ is:
 \begin{equation}
@@ -197,6 +201,12 @@ n alternative to the full-dimensional Metropolis algorithm is the "Metropolis-wi
 	\item Repeat steps (2) and (3) until convergence of the Markov chain.
 \end{enumerate}
 In order to satisfy Diminishing Adaptation, we require that $\delta(n) \rightarrow \infty$ as $n \rightarrow \infty$. To ensure this, we can use $\delta(n) = \min \{0.01, n^{-1/2}\}$. In simulations, this adaptive sampling scheme seems to have better mixing compared to fixing $ls_i$, especially in high dimensions.
+
+
+\bibliographystyle{sysbio}
+\bibliography{Optimal_Proposal_Dist}
+
+
 \end{document}
 
 
