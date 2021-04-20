@@ -24,7 +24,7 @@
 % ADD PACKAGES here:
 %
 
-\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{amsmath,amsfonts,graphicx,natbib}
 
 %
 % The following commands set up the lecnum (lecture number)
@@ -118,7 +118,7 @@
 %**** ARE NEVER READ BY ANYBODY.
 
 \section{Hamiltonian Dynamics}
-The document comprises of a rough outline of the chapter "MCMC Using Hamiltonian Dynamics" from the Handbook of Markov Chain Monte Carlo~\cite{RN11}. We combine the MCMC algorithm and \textbf{Hamiltonian Dynamics}, which formalizes the motion of molecules following Newton's law of motion using differential equations. In order to better understand the dynamics, we use a real world example. Imagine a frictionless puck that slides over a surface of varying height in two dimensions. At any time point, the physical location and movement of the puck can be described by the \textbf{position} vector, $q$, and the \textbf{momentum} vector, $p$. The \textbf{potential energy}, $U(q)$, of the puck is proportional to the height of the surface at the current position of the puck, and its \textbf{kinetic energy}, $K(p)$, is equal to $|p|^2/(2m)$, where $m$ is the \textbf{mass} of the puck. When the potential energy of the puck does not change, the puck moves at a constant \textbf{velocity}, equal to $p/m$. We model this physics problem using the \textbf{Hamiltonian}, $H(q,p)$, which is a function of $q$ and $p$.
+The document comprises of a rough outline of the chapter "MCMC Using Hamiltonian Dynamics" from the Handbook of Markov Chain Monte Carlo \citep{RN11}. We combine the MCMC algorithm and \textbf{Hamiltonian Dynamics}, which formalizes the motion of molecules following Newton's law of motion using differential equations. In order to better understand the dynamics, we use a real world example. Imagine a frictionless puck that slides over a surface of varying height in two dimensions. At any time point, the physical location and movement of the puck can be described by the \textbf{position} vector, $q$, and the \textbf{momentum} vector, $p$. The \textbf{potential energy}, $U(q)$, of the puck is proportional to the height of the surface at the current position of the puck, and its \textbf{kinetic energy}, $K(p)$, is equal to $|p|^2/(2m)$, where $m$ is the \textbf{mass} of the puck. When the potential energy of the puck does not change, the puck moves at a constant \textbf{velocity}, equal to $p/m$. We model this physics problem using the \textbf{Hamiltonian}, $H(q,p)$, which is a function of $q$ and $p$.
 
 We use the partial derivatives of the Hamiltonian function to describe how the object's $q$ and $p$ change over time, $t$, such that:
 $$\frac{dq_i}{dt} = \frac{\partial H}{\partial p_i}, \quad \frac{dp_i}{dt} = -\frac{\partial H}{\partial q_i},$$
@@ -126,13 +126,13 @@ for $i=1,\ldots,d$. For any time interval of duration $s$, these equations defin
 $$H(q,p)=U(q)+K(p),$$
 where $U(q)$ is the negative log pdf of the distribution for $q$, which is our target. $K(p)$ is defined as
 $$K(p) = p^\top M^{-1}p/2,$$
-where $m$ is a the "mass matrix" that is selected to be symmetric, p.d. (mass can't be 0), and is the covariance matrix of a mean zero Gaussian distribution associated with momentum.
+where $m$ is a the ``mass matrix'' that is selected to be symmetric, p.d. (mass can't be 0), and is the covariance matrix of a mean zero Gaussian distribution associated with momentum.
 
 \subsection{Properties}
 \begin{itemize}
     \item \underline{\textbf{Reversibility:}} the mapping $T_s$ from the state at the time $t$, $(q(t),p(t))$, to the state at time $t+s$, $(q(t+s),p(t+s))$, is one-to-one, and hence has an inverse, $T_{-s}$. In MCMC, this is important for showing that the updates leave the desired distribution invariant (leading to a reversible Markov chain).
     \item \underline{\textbf{Conservation of the Hamiltonian:}} The dynamics of this system conserves the energy. For HMC, if $H$ is conserved, the acceptance probability is equal to one. We show this as:
-    $$\frac{dH}{dt} = \sum_{i=1}^d \Bigg[\frac{dq_i}{dt}\frac{\partial H}{\partial p_i} + \frac{dp_i}{dt}\frac{\partial H}{\partial p_i}\Bigg] = \sum_{i=1}^d \Bigg[\frac{\partial H}{\partial p_i}\frac{\partial H}{\partial p_i} - \frac{\partial H}{\partial q_i}\frac{\partial H}{\partial p_i}\Bigg] = 0.$$
+    $$\frac{dH}{dt} = \sum_{i=1}^d \Bigg[\frac{dq_i}{dt}\frac{\partial H}{\partial q_i} + \frac{dp_i}{dt}\frac{\partial H}{\partial p_i}\Bigg] = \sum_{i=1}^d \Bigg[\frac{\partial H}{\partial p_i}\frac{\partial H}{\partial q_i} - \frac{\partial H}{\partial q_i}\frac{\partial H}{\partial p_i}\Bigg] = 0.$$
     \item \underline{\textbf{Volume Preservation:}} We can also show that this system preserves volume in $(q,p)$ space. If we map $T_s$ to the points in some region $R$ of $(q,p)$ space, with volume $V$, the image of $R$ under $T_s$ will also have volume $V$. For MCMC, this allows to not be concerned about the volume in the acceptance probability changing as the algorithm updates. We show this as:
     $$ \sum_{i=1}^d \Bigg[\frac{\partial}{\partial q_i}\frac{dq_i}{dt} + \frac{\partial }{\partial p_i}\frac{dp_i}{dt}\Bigg] = \sum_{i=1}^d \Bigg[\frac{\partial^2 H}{\partial q_i \partial p_i} - \frac{\partial^2 H }{\partial p_i \partial q_i}\Bigg] = 0.$$
     \item \underline{\textbf{Symplecticness:}} Volume preservation is also a result from symplecticness of the system. Let $z=(q,p)$, and define
@@ -205,6 +205,7 @@ If the proposed state is not accepted, we keep the previous current state. The p
 
 \bibliographystyle{sysbio}
 \bibliography{HMC}
+
 
 % **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
 
