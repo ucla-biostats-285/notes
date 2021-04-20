@@ -1,0 +1,211 @@
+%
+% This is the LaTeX template file for lecture notes for CS267,
+% Applications of Parallel Computing.  When preparing 
+% LaTeX notes for this class, please use this template.
+%
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi.
+%
+
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%
+% ADD PACKAGES here:
+%
+
+\usepackage{amsmath,amsfonts,graphicx}
+
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Biostats 285: Advanced Bayesian Computing
+		\hfill Spring 2021} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   {\bf Note}: {\it LaTeX template courtesy of UC Berkeley EECS dept.}
+
+   {\bf Disclaimer}: {\it These notes have not been subjected to the
+   usual scrutiny reserved for formal publications.  They may be distributed
+   outside this class only with the permission of the Instructor.}
+   \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+\renewcommand{\cite}[1]{[#1]}
+\def\beginrefs{\begin{list}%
+        {[\arabic{equation}]}{\usecounter{equation}
+         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{1.6truecm}}}
+\def\endrefs{\end{list}}
+\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{3}{April 20}{Andrew Holbrook}{Joanna Boland}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+\section{Hamiltonian Dynamics}
+The document comprises of a rough outline of the chapter "MCMC Using Hamiltonian Dynamics" from the Handbook of Markov Chain Monte Carlo~\cite{RN11}. We combine the MCMC algorithm and \textbf{Hamiltonian Dynamics}, which formalizes the motion of molecules following Newton's law of motion using differential equations. In order to better understand the dynamics, we use a real world example. Imagine a frictionless puck that slides over a surface of varying height in two dimensions. At any time point, the physical location and movement of the puck can be described by the \textbf{position} vector, $q$, and the \textbf{momentum} vector, $p$. The \textbf{potential energy}, $U(q)$, of the puck is proportional to the height of the surface at the current position of the puck, and its \textbf{kinetic energy}, $K(p)$, is equal to $|p|^2/(2m)$, where $m$ is the \textbf{mass} of the puck. When the potential energy of the puck does not change, the puck moves at a constant \textbf{velocity}, equal to $p/m$. We model this physics problem using the \textbf{Hamiltonian}, $H(q,p)$, which is a function of $q$ and $p$.
+
+We use the partial derivatives of the Hamiltonian function to describe how the object's $q$ and $p$ change over time, $t$, such that:
+$$\frac{dq_i}{dt} = \frac{\partial H}{\partial p_i}, \quad \frac{dp_i}{dt} = -\frac{\partial H}{\partial q_i},$$
+for $i=1,\ldots,d$. For any time interval of duration $s$, these equations define a mapping $T_s$, from the state at any time $t$ to the state at time $t+s$. For HMC, we usually formula the Hamiltonian functions as:
+$$H(q,p)=U(q)+K(p),$$
+where $U(q)$ is the negative log pdf of the distribution for $q$, which is our target. $K(p)$ is defined as
+$$K(p) = p^\top M^{-1}p/2,$$
+where $m$ is a the "mass matrix" that is selected to be symmetric, p.d. (mass can't be 0), and is the covariance matrix of a mean zero Gaussian distribution associated with momentum.
+
+\subsection{Properties}
+\begin{itemize}
+    \item \underline{\textbf{Reversibility:}} the mapping $T_s$ from the state at the time $t$, $(q(t),p(t))$, to the state at time $t+s$, $(q(t+s),p(t+s))$, is one-to-one, and hence has an inverse, $T_{-s}$. In MCMC, this is important for showing that the updates leave the desired distribution invariant (leading to a reversible Markov chain).
+    \item \underline{\textbf{Conservation of the Hamiltonian:}} The dynamics of this system conserves the energy. For HMC, if $H$ is conserved, the acceptance probability is equal to one. We show this as:
+    $$\frac{dH}{dt} = \sum_{i=1}^d \Bigg[\frac{dq_i}{dt}\frac{\partial H}{\partial p_i} + \frac{dp_i}{dt}\frac{\partial H}{\partial p_i}\Bigg] = \sum_{i=1}^d \Bigg[\frac{\partial H}{\partial p_i}\frac{\partial H}{\partial p_i} - \frac{\partial H}{\partial q_i}\frac{\partial H}{\partial p_i}\Bigg] = 0.$$
+    \item \underline{\textbf{Volume Preservation:}} We can also show that this system preserves volume in $(q,p)$ space. If we map $T_s$ to the points in some region $R$ of $(q,p)$ space, with volume $V$, the image of $R$ under $T_s$ will also have volume $V$. For MCMC, this allows to not be concerned about the volume in the acceptance probability changing as the algorithm updates. We show this as:
+    $$ \sum_{i=1}^d \Bigg[\frac{\partial}{\partial q_i}\frac{dq_i}{dt} + \frac{\partial }{\partial p_i}\frac{dp_i}{dt}\Bigg] = \sum_{i=1}^d \Bigg[\frac{\partial^2 H}{\partial q_i \partial p_i} - \frac{\partial^2 H }{\partial p_i \partial q_i}\Bigg] = 0.$$
+    \item \underline{\textbf{Symplecticness:}} Volume preservation is also a result from symplecticness of the system. Let $z=(q,p)$, and define
+    $$J = \begin{bmatrix}
+    0_{d \times d} & I_{d \times d} \\ -I_{d \times d} & 0_{d \times d}
+    \end{bmatrix}.$$
+    Symplecticness is when the Jacobian matrix, $B_s$, of the mapping $T_s$ satisfies
+    $$B_s^\top J^{-1} B_s = J^{-1}.$$
+    Therefore, $\det (B_s^\top) \det (J^{-1}) \det (B_s) = \det (J^{-1}) \rightarrow \det (B_s)^2 =1.$ This indicates volume conservation. 
+\end{itemize}
+\subsection{Discretizing Hamilton's Equations - The Leapfrog Method}
+In order to solve for these differential equations numerically, we have to approximate these equations in discrete time, using increments of stepsize, $\epsilon$. We start at time zero and iteratively compute the state at times $\epsilon$, $2\epsilon$, $3\epsilon,
+\ldots$. Further, we will assume that $M$ is diagonal, with elements $m_1,\ldots,m_d$, such that
+$$K(p) = \sum_{i=1}^d \frac{p^2_i}{2m_i}.$$
+A very famous and common method to approximate the solutions of a system differential equations is \textbf{Euler's method.} This method iteratively performs the following steps, indexed by $i = 1,\ldots,d:$
+$$p_i(t+\epsilon) = p_i(t) + \epsilon\frac{dp_i}{dt}(t) = p_i(t) - \epsilon\frac{\partial U}{\partial q_i}(q(t)),$$
+$$q_i(t+\epsilon) = q_i(t) + \epsilon\frac{dq_i}{dt}(t) = q_i(t) + \epsilon\frac{p_i(t)}{m_i},$$
+and updates the position and momentum at each step. Much better results can be obtained by slightly modifying Euler's method as:
+$$p_i(t+\epsilon) = p_i(t) - \epsilon\frac{\partial U}{\partial q_i}(q(t)),$$
+$$q_i(t+\epsilon) = q_i(t) + \epsilon\frac{p(t+\epsilon)}{m_i}.$$
+We update the value of momentum, $p$, and then update the position, $q$, using our new value of momentum. Even better results can be obtained with the \textbf{leapfrop method}:
+$$p_i(t+\epsilon/2) = p_i(t) - (\epsilon/2)\frac{\partial U}{\partial q_i}(q(t)),$$
+$$q_i(t+\epsilon) = q_i(t) + \epsilon\frac{p_i(t+\epsilon/2)}{m_i},$$
+$$p_i(t+\epsilon) = p_i(t+\epsilon/2) - (\epsilon/2)\frac{\partial U}{\partial q_i}(q(t+\epsilon)).$$
+We update the momentum with a half-step, and then update the position using this new momentum. Then, using the new position vector, we update the momentum vector with another half-step. 
+
+\section{MCMC from Hamiltonian Dynamics}
+We can simulate a Markov chain in which each iteration resamples the momentum and then performs a Metropolis update using the model of Hamiltonian dynamics. We wish to sample from the \textbf{canonical distribution} that is related to the potential energy. For some energy function, $E[x]$, for the state, $x$, of some physical system, the canonical distribution over states has pdf
+$$P(x) = \frac{1}{Z}\exp \Bigg(\frac{-E[x]}{T}\Bigg).$$
+Here, $T$ is the temperature of the system, and $Z$ is the normalizing constant. We then define the joint probability of the Hamiltonian dynamics for $(q,p)$ as:
+$$P(q,p) =\frac{1}{Z} \exp \Bigg(\frac{-H(q,p)}{T}\Bigg).$$ The conservation of energy under Hamiltonian dynamics means a trajectory will operate within a hypersurface of constant probability. If $H(q,p)=U(q)+K(p),$ the joint density is
+$$P(q,p)=\frac{1}{Z}\exp \Bigg(\frac{-U(q)}{T}\Bigg)\exp \Bigg(\frac{-K(p)}{T}\Bigg).$$
+Thus $q \perp p$ and have canonical distributions $U(q)$ and $K(p)$. Position, $q$, is our variable of interest, and we use $p$ to allow us to assume the properties of Hamiltonian dynamics. The canonical distribution of the posterior (with $T=1$) is defined by the potential energy function as:
+$$U(q)=-\log\big[\pi(q)L(q|D)\big],$$
+where $\pi(q)$ is the prior density, and $L(q|D)$ is the likelihood function given data, $D$.
+
+\subsection{The Two Steps of the HMC Algorithm}
+Each iteration of the HMC algorithm has two steps. The first step updates momentum $p$, and the second step can change both $q$ and $p$. Both steps conserve energy, which means the combination of these steps also conserves energy. 
+
+\underline{\textbf{Step 1:}} We update momentum from randomly drawing from the associated Gaussian distribution. For the kinetic energy, the $i = 1,\ldots,d$ momentum variables are independent, with $p_i \sim N(0,m_i)$. Note that $q$ has not changed and is independent from $p$, meaning that drawing from the joint distribution conserves energy. 
+
+\underline{\textbf{Step 2:}} A Metropolis update is performed, using Hamiltonian dynamics to propose a new state and update $q$, but also potentially update $p$. Using the current state, $(q,p)$, the leapfrog method is implemented for $L$ steps, with a stepsize of $\epsilon$. $L$ and $\epsilon$ need to be tuned for computational performance. We negate the momentum variables at the end of this $L$-step trajectory, giving a proposed state $(q^{\star},p^{\star})$. This proposed state is accepted and updates the current state with probability
+$$\min \Big[1,\exp \big(-H(q^{\star},p^{\star}) + H(q,p)\big)\Big] = \min \Big[1,\exp \big(-U(q^{\star}) + U(q) - K(p^{\star}) + K(p)\big) \Big].$$
+If the proposed state is not accepted, we keep the previous current state. The pseudocode for the HMC algorithm can be defined as:
+\begin{tabbing}
+\hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \=\kill
+\> \textbf{for} $i =1,\ldots,L$ \\
+\>\> $p^{\star} \leftarrow N_q(0, 1)$ \\
+\>\> $p^{\star} \leftarrow p^{\star} - (\epsilon/2)\nabla U(q)$\\
+\>\> \textbf{for} i in $1,\ldots,L$ \\
+\>\>\> $q^{\star} \leftarrow q^{\star} + \epsilon p^{\star}$ \\
+\>\>\> \textbf{if} $i \neq L$ \\
+\>\>\>\> $p^{\star} \leftarrow p^{\star} - \epsilon \nabla U(q^{\star})$ \\
+\>\>\> \textbf{endif} \\
+\>\> \textbf{endfor} \\
+\>\> $p^{\star} \leftarrow p^{\star} - (\epsilon/2) \nabla U(q^{\star})$ \\
+\>\> $p^{\star} \leftarrow -p^{\star}$ \\
+\>\> $U \leftarrow U(q)$ \\
+\>\> $K \leftarrow \sum_{i=1}^d p_i^2/2$ \\
+\>\> $U^{\star} \leftarrow U(q^{\star})$ \\
+\>\> $K^{\star} = \sum_{i=1}^d p^{2\star}_i/2$ \\
+\>\> $a \leftarrow Uniform(0,1)$ \\
+\>\> \textbf{if} $a < \exp\big(U - U^{\star} + K - K^{\star}\big)$ \\
+\>\>\> $q \leftarrow q^{\star}$\\
+\>\> \textbf{else} \\
+\>\>\> $q \leftarrow q$ \\
+\>\> \textbf{endif} \\
+\> \textbf{endfor}
+\end{tabbing}
+
+\bibliographystyle{sysbio}
+\bibliography{HMC}
+
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+\end{document}
