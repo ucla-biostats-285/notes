@@ -125,7 +125,7 @@
 
 \section{Introduction} 
 
-These notes summarize the paper, "Generalizing Hamiltonian Monte Carlo with Neural Networks" \cite{levy2018}. This paper introduces a method for optimizing Markov chain Monte Carlo (MCMC) transition kernels using deep neural networks, as measured by expected squared jump distance (a proxy for mixing speed). The algorithm can be considered a generalization of Hamiltonian Monte Carlo (HMC), and greatly improves on the vanilla algorithm's performance, especially when sampling multi-modal distributions.
+These notes summarize the paper, "Generalizing Hamiltonian Monte Carlo with Neural Networks" \citep{levy2018}. This paper introduces a method for optimizing Markov chain Monte Carlo (MCMC) transition kernels using deep neural networks, as measured by expected squared jump distance (a proxy for mixing speed). The algorithm can be considered a generalization of Hamiltonian Monte Carlo (HMC), and greatly improves on the vanilla algorithm's performance, especially when sampling multi-modal distributions.
 
 \subsection{Review of HMC}
 Given our target distribution $p(x)$, where $x \in \mathbb{R}^n$, we assume that there is a potential energy function $U(x)$ such that $p(x) \propto \text{exp}(-U(x))$. We also assume a momentum vector $v \in \mathbb{R}^n$ with kinetic energy function $K(v) = \frac{v^TM^{-1}v}{2}$ such that $p(v) \propto \text{exp}(-K(v))$. In this case the authors assume the mass matrix is identity. 
@@ -208,7 +208,7 @@ Sampling consists of the following two step sequence: first a leapfrog update an
 \end{enumerate}
 
 \subsection{Loss and Training}
-$Q$, $S$, and $T$, are implemented using multi-layer perceptrons (MLP) with shared weights. The authors aim to train the parameters $\theta$ of these functions such that they maximize the expected squared jump distance (which is equivalent to minimizing lag-one autocorrelation)\cite{Pasarica2003}). Expected squared jump distance is defined as follows:
+$Q$, $S$, and $T$, are implemented using multi-layer perceptrons (MLP) with shared weights. The authors aim to train the parameters $\theta$ of these functions such that they maximize the expected squared jump distance (which is equivalent to minimizing lag-one autocorrelation)\citep{Pasarica2003}). Expected squared jump distance is defined as follows:
 \begin{equation}
     \mathbb{E}_{\xi \sim p(\xi)} [\delta(\xi',\xi)A(\xi',\xi)]; \quad \delta(\xi',\xi) \triangleq ||x-x'||_2^2
 \end{equation}
