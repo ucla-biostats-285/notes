@@ -233,7 +233,7 @@ The psuedocode for training the parameters of our leapfrog operator is provided 
     \State $\mathcal{L} \leftarrow 0$
     \For{i=1 to N}
         \State $\xi_p^{(i)} \leftarrow \textbf{R}\xi_p^{(i)}$
-        \State $\mathcal{L} \leftarrow \mathcal{L} + \ell_{\lambda}(\xi_p', \textbf{FL}_\theta \xi_p, A(\textbf{FL}_\theta_p \xi | \xi_p)) + \lambda_b \ell_{\lambda}(\xi_q', \textbf{FL}_\theta \xi_q, A(\textbf{FL}_\theta \xi_q | \xi_q)) $
+        \State $\mathcal{L} \leftarrow \mathcal{L} + \ell_{\lambda}(\xi_p', \textbf{FL}_\theta \xi_p, A(\textbf{FL}_\theta \xi_p | \xi_p)) + \lambda_b \ell_{\lambda}(\xi_q', \textbf{FL}_\theta \xi_q, A(\textbf{FL}_\theta \xi_q | \xi_q)) $
         \State $\xi_p^{(i)} \leftarrow \textbf{FL}_\theta \xi_p^{(i)} \text{ with probability } A(\textbf{FL}_\theta \xi_p^{(i)}|\xi_p^{(i)})$
     \EndFor
     \State $\theta \leftarrow \theta - \alpha_t \nabla_\theta \mathcal{L}$
