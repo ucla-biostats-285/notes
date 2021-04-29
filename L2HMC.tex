@@ -125,7 +125,7 @@
 
 \section{Introduction} 
 
-These notes summarize the paper, "Generalizing Hamiltonian Monte Carlo with Neural Networks" \citep{levy2018}. This paper introduces a method for optimizing Markov chain Monte Carlo (MCMC) transition kernels using deep neural networks, as measured by expected squared jump distance (a proxy for mixing speed). The algorithm can be considered a generalization of Hamiltonian Monte Carlo (HMC), and greatly improves on the vanilla algorithm's performance, especially when sampling multi-modal distributions.
+These notes summarize the paper, ``Generalizing Hamiltonian Monte Carlo with Neural Networks" \citep{levy2018}. This paper introduces a method for optimizing Markov chain Monte Carlo (MCMC) transition kernels using deep neural networks, as measured by expected squared jump distance (a proxy for mixing speed). The algorithm can be considered a generalization of Hamiltonian Monte Carlo (HMC), and greatly improves on the vanilla algorithm's performance, especially when sampling multi-modal distributions.
 
 \subsection{Review of HMC}
 Given our target distribution $p(x)$, where $x \in \mathbb{R}^n$, we assume that there is a potential energy function $U(x)$ such that $p(x) \propto \text{exp}(-U(x))$. We also assume a momentum vector $v \in \mathbb{R}^n$ with kinetic energy function $K(v) = \frac{v^TM^{-1}v}{2}$ such that $p(v) \propto \text{exp}(-K(v))$. In this case the authors assume the mass matrix is identity. 
@@ -161,7 +161,7 @@ They also note that this extension of HMC needs to maintain the following proper
 \subsection{State Space}
 We first extend our state space by introducing a random binary direction variable $d\in \{-1,1\}$ (drawn from uniform distribution). Our new state vector becomes $\xi \triangleq (x,v,d)$, and joint probability becomes $p(\xi)=p(x)p(v)p(d)$. 
 \\In order to make the leapfrog update more expressive, the authors define a random a mask $m^t \in \{0,1\}^n$ to partition our position vector in preparation for two separate update steps. $m^t$ is drawn uniformly from all combinations of masks where exactly half the entries are 1 and half are 0. We use both the mask  $m^t$ and its complement $\Bar{m}^t \triangleq \mathbbm{1}-m^t$. 
-\\Lastly,the authors use $\zeta \subset \xi$ to denote a subset of our full state vector.
+\\Lastly, the authors use $\zeta \subset \xi$ to denote a subset of our full state vector.
 
 
 \subsection{Update Steps}
@@ -208,7 +208,7 @@ Sampling consists of the following two step sequence: first a leapfrog update an
 \end{enumerate}
 
 \subsection{Loss and Training}
-$Q$, $S$, and $T$, are implemented using multi-layer perceptrons (MLP) with shared weights. The authors aim to train the parameters $\theta$ of these functions such that they maximize the expected squared jump distance (which is equivalent to minimizing lag-one autocorrelation)\citep{Pasarica2003}). Expected squared jump distance is defined as follows:
+$Q$, $S$, and $T$, are implemented using multi-layer perceptrons (MLP) with shared weights. The authors aim to train the parameters $\theta$ of these functions such that they maximize the expected squared jump distance (which is equivalent to minimizing lag-one autocorrelation)\citep{Pasarica2003}. Expected squared jump distance is defined as follows:
 \begin{equation}
     \mathbb{E}_{\xi \sim p(\xi)} [\delta(\xi',\xi)A(\xi',\xi)]; \quad \delta(\xi',\xi) \triangleq ||x-x'||_2^2
 \end{equation}
@@ -233,7 +233,7 @@ The psuedocode for training the parameters of our leapfrog operator is provided 
     \State $\mathcal{L} \leftarrow 0$
     \For{i=1 to N}
         \State $\xi_p^{(i)} \leftarrow \textbf{R}\xi_p^{(i)}$
-        \State $\mathcal{L} \leftarrow \mathcal{L} + \ell_{\lambda}(\xi', \textbf{FL}_\theta \xi, A(\textbf{FL}_\theta \xi | \xi)) + \lambda_b \ell_{\lambda}(\xi', \textbf{FL}_\theta \xi, A(\textbf{FL}_\theta \xi | \xi)) $
+        \State $\mathcal{L} \leftarrow \mathcal{L} + \ell_{\lambda}(\xi_p', \textbf{FL}_\theta \xi_p, A(\textbf{FL}_\theta_p \xi | \xi_p)) + \lambda_b \ell_{\lambda}(\xi_q', \textbf{FL}_\theta \xi_q, A(\textbf{FL}_\theta \xi_q | \xi_q)) $
         \State $\xi_p^{(i)} \leftarrow \textbf{FL}_\theta \xi_p^{(i)} \text{ with probability } A(\textbf{FL}_\theta \xi_p^{(i)}|\xi_p^{(i)})$
     \EndFor
     \State $\theta \leftarrow \theta - \alpha_t \nabla_\theta \mathcal{L}$
