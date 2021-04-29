@@ -135,12 +135,12 @@ The authors use the leapfrog integrator, whose update steps are given as:
 \end{equation}
 The authors use $\xi \triangleq (x,v)$ to denote the extended state vector, so that the joint probability of position and momentum can be written as
 \begin{equation}
-    p(\xi) = p(x)p(v)
+    p(\xi) = p(x)p(v).
 \end{equation}
 The authors use the operator $\textbf{L}\xi \triangleq (x',v')$ to denote this entire leapfrog operation, and introduce another operator, $\textbf{F}\xi \triangleq (x,-v)$, to denote the momentum flip operation. Chaining these two operators together gives us $\textbf{FL}\xi = (x',-v')$. In vanilla HMC the volume-preserving properties of our operators ensure the determinant of the jacobian, $\left| \frac{\partial[\textbf{FL}\xi]}{\partial \xi^T}\right|$, is 1. However, the generalized version of HMC introduced in this paper will have non-trivial jacobian determinants, and so we write the full acceptance formula below (this is just Metropolis-Hastings-Green):
-\begin{equation*}
+\begin{equation}
     A(\textbf{FL}\xi | \xi) = \text{min} \left( 1, \frac{p(\textbf{FL}\xi)}{p(\xi)}\left| \frac{\partial[\textbf{FL}\xi]}{\partial \xi^T}\right|\right)
-\end{equation*}
+\end{equation}
 
 
 \section{L2HMC: Training MCMC Samplers}
@@ -214,13 +214,13 @@ $Q$, $S$, and $T$, are implemented using multi-layer perceptrons (MLP) with shar
 \end{equation}
 The authors modify this objective to encourage mixing across the entire state space (otherwise expected jumps could be large while not sampling at all from certain regions). This modification results in the loss function:
 
-\begin{equation*}
+\begin{equation}
     \ell_{\lambda} (\xi, \xi', A(\xi'|\xi)) = \frac{\lambda^2}{\delta(\xi,\xi')A(\xi,\xi')} -\frac{\delta(\xi,\xi')A(\xi,\xi')}{\lambda^2}
-\end{equation*}
+\end{equation}
 Where $\lambda$ is a scale parameter that captures the length scale of the problem. Finally, the authors also consider this loss over not just the target distribution, but the initial distribution ,$\pi_0$, to encourage a faster burn-in (technically they use an initial join distribution $q(\xi) = \pi_0(x)\mathcal{N}(v;0,I)p(d)$).
-\begin{equation*}
+\begin{equation}
     \mathcal{L}(\theta) \triangleq \mathbb{E}_{p(\xi)}[\ell_{\lambda}(\xi', \textbf{FL}_\theta \xi, A(\textbf{FL}_\theta \xi | \xi))] + \lambda_b \mathbb{E}_{q(\xi)}[\ell_{\lambda}(\xi', \textbf{FL}_\theta \xi, A(\textbf{FL}_\theta \xi | \xi))]
-\end{equation*}
+\end{equation}
 
 The psuedocode for training the parameters of our leapfrog operator is provided here:
 
